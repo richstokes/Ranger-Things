@@ -90,7 +90,7 @@ void loop() {
     if (obd.readPID(PID_BAROMETRIC, BAROvalue)) {
       int BOOSTvalue = MAPvalue - BAROvalue; //calculate boost pressure
       BOOSTvalue = map(BOOSTvalue, 0, 255, 0, 37); //convert to PSI (https://mechanics.stackexchange.com/questions/45239/calculate-boost-from-map-sensor-via-obd-ii)
-      drawtextByLine(String(MAPvalue), ST77XX_WHITE, 120);
+      drawtextByLine(String(BOOSTvalue) + " psi", ST77XX_WHITE, 120);
     }
   }
 
