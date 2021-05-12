@@ -2,8 +2,6 @@
 #include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
 #include <SPI.h>
-#include <Fonts/FreeMonoBoldOblique12pt7b.h>
-#include <Fonts/FreeSerif9pt7b.h>
 #include <OBD2UART.h>
 
 COBD obd;
