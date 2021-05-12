@@ -76,7 +76,7 @@ void loop() {
 
   int WATERvalue;
   if (obd.readPID(PID_COOLANT_TEMP, WATERvalue)) {
-    if (WATERvalue > 98) {
+    if (WATERvalue > 97) {
       drawtextByLine(String(WATERvalue), ST77XX_RED, 200);
     } else {
         drawtextByLine(String(WATERvalue), ST77XX_WHITE, 200);
