@@ -1,5 +1,9 @@
 # Ranger Things
-An OBDII gauge.
+An OBDII gauge. Wanted to make one myself for the learning experience, and to customize it to show what I'd like.  
+
+Nothing crazy, but its easy to swap in your own metrics and customize. The screen is set to power off automatically if no OBD data is recieved, so it shouldn't drain your battery if left plugged in.
+
+&nbsp;
 
 ## Hardware
  - [Arduino Nano](https://www.amazon.com/Arduino-A000005-ARDUINO-Nano/dp/B0097AU5OU/)
