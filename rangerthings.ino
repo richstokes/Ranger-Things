@@ -13,12 +13,13 @@ COBD obd;
 #define BACKGROUND_COLOR ST77XX_BLACK
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST); // For 1.14", 1.3", 1.54", and 2.0" TFT with ST7789:
 
+bool isDisplaySleeping = false;
+
 void setup() {
   tft.init(240, 240);           // Init ST7789 240x240
   tft.fillScreen(BACKGROUND_COLOR);
   tft.setTextSize(5);
   drawtextByLine("FORD\nRANGER", ST77XX_BLUE, 0);
-
   // Wait for connection to adapter
   for (;;) {
     delay(1000);
@@ -42,7 +43,6 @@ void setup() {
   // Reset display
   delay(1000);
   tft.fillScreen(BACKGROUND_COLOR);
-  randomSeed(analogRead(0)); // for when testing/generating dummy values
 
   // Draw titles on startup to reduce the time it takes to redraw the display (improves fps)
   drawtextByLine("RPM:", ST77XX_BLUE, 0);
@@ -58,23 +58,28 @@ void setup() {
 }
 
 void loop() {
-// Tests:
-//  float BOOST = random(-500, 200) / 100;
-//  float OIL_TEMP = random(150, 275);
-//  float RPM = random(600, 9000);
-
   // Get values from OBD
   int RPMvalue;
   if (obd.readPID(PID_RPM, RPMvalue)) {
-    if (RPMvalue < 1000) {
-      drawtextByLine("    ", ST77XX_WHITE, 40);
+    if (isDisplaySleeping) {
+      tft.enableSleep(false); // Wake up display if its asleep AND we're getting a value
+      isDisplaySleeping = false;
     }
-    drawtextByLine(String(RPMvalue), ST77XX_WHITE, 40);
+    
+    if (RPMvalue < 1000) {
+      drawtextByLine(String(RPMvalue) + "  ", ST77XX_WHITE, 40);
+    } else {
+      drawtextByLine(String(RPMvalue), ST77XX_WHITE, 40);
+    }
+    
+  } else { // Sleep display if no PID values read
+       tft.enableSleep(true); 
+       isDisplaySleeping = true;
   }
 
   int WATERvalue;
   if (obd.readPID(PID_COOLANT_TEMP, WATERvalue)) {
-    if (WATERvalue > 97) {
+    if (WATERvalue > 96) {
       drawtextByLine(String(WATERvalue), ST77XX_RED, 200);
     } else {
         drawtextByLine(String(WATERvalue), ST77XX_WHITE, 200);
@@ -88,16 +93,10 @@ void loop() {
     if (obd.readPID(PID_BAROMETRIC, BAROvalue)) {
       int BOOSTvalue = MAPvalue - BAROvalue; //calculate boost pressure
       BOOSTvalue = map(BOOSTvalue, 0, 255, 0, 37); //convert to PSI (https://mechanics.stackexchange.com/questions/45239/calculate-boost-from-map-sensor-via-obd-ii)
-      drawtextByLine(String(BOOSTvalue) + " psi", ST77XX_WHITE, 120);
+      drawtextByLine(String(BOOSTvalue) + " psi  ", ST77XX_WHITE, 120);
     }
   }
-
-  // Tests
-  //  drawtextByLine(String(RPM), ST77XX_WHITE, 40);
-  //  drawtextByLine(String(BOOST), ST77XX_WHITE, 120);
-  //  drawtextByLine(String(OIL_TEMP), ST77XX_WHITE, 200);
-
-
+  
   // Example for reading multiple PIDs at once -- https://github.com/stanleyhuangyc/ArduinoOBD/blob/master/libraries/OBD2UART/examples/obd_uart_test/obd_uart_test.ino#L69
 }
 
